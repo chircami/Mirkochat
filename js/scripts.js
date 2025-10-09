@@ -10,9 +10,9 @@ window.onload = function() {
     var hours =  date.getHours();
     var minutes =  date.getMinutes();
     var current = hours + (minutes * .01);
-    if (current >= 5 && current < 19) return 'Te deseo un feliz dia!!';
-    if (current >= 19 && current < 22) return 'Te deseo una feliz tarde!!';
-    if (current >= 22 || current < 5) return 'Te deseo una feliz noche!!';
+    if (current >= 5 && current < 17) return 'Te deseo un feliz dia!!';
+    if (current >= 17 && current < 20) return 'Te deseo una feliz tarde!!';
+    if (current >= 20 || current < 5) return 'Te deseo una feliz noche!!';
   }
 
   var messages = [
