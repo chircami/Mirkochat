@@ -17,7 +17,7 @@ window.onload = function() {
 
   var messages = [
     'Hola 👋',
-    'Me llamo Mirko',
+    'Me llamo Mirkolino',
     'Soy desarrollador de paginas web con WordPress y otras tecnologías',
     'Podemos charlar o tomar un ☕',
     'Si te es mas facil me puedes contactar a <a href="mailto:mirko.zedde@gmail.com">hola@mirkolab.com</a><br> visitar mi pagina  '<a target="_blank" href="https://www.mirkolab.com/">Mirkolab<a>'<br> o buscarme en las redes sociales <br>',
