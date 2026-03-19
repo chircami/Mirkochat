@@ -20,8 +20,8 @@ window.onload = function() {
     'Me llamo Mirkolino',
     'Soy desarrollador de paginas web con WordPress y otras tecnologias',
     'Podemos charlar o tomar un cafe',
-    `Contacta: <a href="mailto:mirko.zedde@gmail.com">email</a> o <a target="_blank" href="https://www.mirkolab.com/">Mirkolab</a>`,
-    `<a target="_blank" href="https://www.linkedin.com/in/mirkozedde">LinkedIn</a>`,
+    'Contacta: <a href="mailto:mirko.zedde@gmail.com">email</a> o <a href="https://www.mirkolab.com/">Mirkolab</a>',
+    '<a href="https://www.linkedin.com/in/mirkozedde">LinkedIn</a>',
     getCurrentTime(),
     'Nos vemos pronto, Mirko.'
   ]
@@ -34,113 +34,67 @@ window.onload = function() {
     return px / getFontSize() + 'rem';
   }
 
-  var createBubbleElements = function(message, position) {
+  var sendMessage = function(message) {
+    var loadingDuration = (message.replace(/<(?:.|\n)*?>/gm, '').length * typingSpeed) + 800;
+
     var bubbleEl = document.createElement('div');
     var messageEl = document.createElement('span');
     var loadingEl = document.createElement('span');
+
     bubbleEl.classList.add('bubble');
-    bubbleEl.classList.add('is-loading');
     bubbleEl.classList.add('cornered');
-    bubbleEl.classList.add(position === 'right' ? 'right' : 'left');
+    bubbleEl.classList.add('left');
     messageEl.classList.add('message');
     loadingEl.classList.add('loading');
+
     messageEl.innerHTML = message;
     loadingEl.innerHTML = loadingText;
+
     bubbleEl.appendChild(loadingEl);
     bubbleEl.appendChild(messageEl);
-    bubbleEl.style.opacity = 0;
-    return {
-      bubble: bubbleEl,
-      message: messageEl,
-      loading: loadingEl
-    }
-  }
-
-  var getDimentions = function(elements) {
-    return dimensions = {
-      loading: { w: '4rem', h: '2.25rem' },
-      bubble: {
-        w: pxToRem(elements.bubble.offsetWidth + 4),
-        h: pxToRem(elements.bubble.offsetHeight)
-      },
-      message: {
-        w: pxToRem(elements.message.offsetWidth + 4),
-        h: pxToRem(elements.message.offsetHeight)
-      }
-    }
-  }
-
-  var sendMessage = function(message, position) {
-    var loadingDuration = (message.replace(/<(?:.|\n)*?>/gm, '').length * typingSpeed) + 500;
-    var elements = createBubbleElements(message, position);
-    messagesEl.appendChild(elements.bubble);
+    messagesEl.appendChild(bubbleEl);
     messagesEl.appendChild(document.createElement('br'));
-    var dimensions = getDimentions(elements);
-    elements.bubble.style.width = '0rem';
-    elements.bubble.style.height = dimensions.loading.h;
-    elements.message.style.width = dimensions.message.w;
-    elements.message.style.height = dimensions.message.h;
-    elements.bubble.style.opacity = 1;
-    var bubbleOffset = elements.bubble.offsetTop + elements.bubble.offsetHeight;
-    if (bubbleOffset > messagesEl.offsetHeight) {
-      anime({ targets: messagesEl, scrollTop: bubbleOffset, duration: 750 });
-    }
+
+    // Show bubble with loading dots
+    bubbleEl.style.opacity = 0;
+    bubbleEl.style.width = '4rem';
+    bubbleEl.style.height = '2.25rem';
+    messageEl.style.opacity = 0;
+
     anime({
-      targets: elements.bubble,
-      width: ['0rem', dimensions.loading.w],
-      marginTop: ['2.5rem', 0],
-      marginLeft: ['-2.5rem', 0],
-      duration: 800,
-      easing: 'easeOutElastic'
+      targets: bubbleEl,
+      opacity: [0, 1],
+      duration: 300
     });
-    var loadingLoop = anime({
-      targets: elements.bubble,
-      scale: [1.05, .95],
-      duration: 1100,
-      loop: true,
-      direction: 'alternate',
-      easing: 'easeInOutQuad'
-    });
-    anime({
-      targets: elements.loading,
-      translateX: ['-2rem', '0rem'],
-      scale: [.5, 1],
-      duration: 400,
-      delay: 25,
-      easing: 'easeOutElastic'
-    });
-    var dotsPulse = anime({
-      targets: elements.bubble.querySelectorAll('b'),
-      scale: [1, 1.25],
-      opacity: [.5, 1],
-      duration: 300,
-      loop: true,
-      direction: 'alternate',
-      delay: function(i) { return (i * 100) + 50; }
-    });
+
+    // After loading duration, reveal the message
     setTimeout(function() {
-      loadingLoop.pause();
-      dotsPulse.restart({
-        opacity: 0, scale: 0, loop: false, direction: 'forwards',
-        update: function(a) {
-          if (a.progress >= 65 && elements.bubble.classList.contains('is-loading')) {
-            elements.bubble.classList.remove('is-loading');
-            anime({ targets: elements.message, opacity: [0, 1], duration: 300 });
-          }
-        }
-      });
+      // Hide loading dots
+      loadingEl.style.display = 'none';
+      bubbleEl.classList.remove('cornered');
+
+      // Measure real message size
+      var msgW = pxToRem(messageEl.scrollWidth + 8);
+      var msgH = pxToRem(messageEl.scrollHeight + 16);
+
+      // Expand bubble to fit message
       anime({
-        targets: elements.bubble,
-        scale: 1,
-        width: [dimensions.loading.w, dimensions.bubble.w],
-        height: [dimensions.loading.h, dimensions.bubble.h],
-        marginTop: 0,
-        marginLeft: 0,
-        begin: function() {
-          if (messageIndex < messages.length) elements.bubble.classList.remove('cornered');
+        targets: bubbleEl,
+        width: msgW,
+        height: msgH,
+        duration: 300,
+        easing: 'easeOutQuad',
+        complete: function() {
+          // Fade in message text
+          anime({
+            targets: messageEl,
+            opacity: [0, 1],
+            duration: 300
+          });
         }
       });
-    }, loadingDuration - 50);
+
+    }, loadingDuration);
   }
 
   var sendMessages = function() {
@@ -148,7 +102,8 @@ window.onload = function() {
     if (!message) return;
     sendMessage(message);
     ++messageIndex;
-    setTimeout(sendMessages, (message.replace(/<(?:.|\n)*?>/gm, '').length * typingSpeed) + anime.random(900, 1200));
+    var delay = (message.replace(/<(?:.|\n)*?>/gm, '').length * typingSpeed) + 1200;
+    setTimeout(sendMessages, delay);
   }
 
   sendMessages();
