@@ -20,8 +20,8 @@ window.onload = function() {
     'Me llamo Mirkolino',
     'Soy desarrollador de paginas web con WordPress y otras tecnologias',
     'Podemos charlar o tomar un cafe',
-    `Contacta: <a href="mailto:mirko.zedde@gmail.com">email</a> o <a target="_blank" href="https://www.mirkolab.com/">Mirkolab</a>`,
-    `<a target="_blank" href="https://www.linkedin.com/in/mirkozedde">LinkedIn</a>`,
+    'Contacta: <a href="mailto:mirko.zedde@gmail.com">email</a> o <a target="_blank" href="https://www.mirkolab.com/">Mirkolab</a>',
+    '<a target="_blank" href="https://www.linkedin.com/in/mirkozedde">LinkedIn</a>',
     getCurrentTime(),
     'Nos vemos pronto, Mirko.'
   ]
