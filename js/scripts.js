@@ -20,19 +20,11 @@ window.onload = function() {
     'Me llamo Mirkolino',
     'Soy desarrollador de paginas web con WordPress y otras tecnologias',
     'Podemos charlar o tomar un cafe',
-    'Contacta: <a href="mailto:mirko.zedde@gmail.com">email</a> o <a href="https://www.mirkolab.com/">Mirkolab</a>',
-    '<a href="https://www.linkedin.com/in/mirkozedde">LinkedIn</a>',
+    'Contacta: <a href="mailto:mirko.zedde@gmail.com">email</a> o visita <a href="https://www.mirkolab.com/">Mirkolab</a>',
+    'Encuentrame en <a href="https://www.linkedin.com/in/mirkozedde">LinkedIn</a>',
     getCurrentTime(),
     'Nos vemos pronto, Mirko.'
   ]
-
-  var getFontSize = function() {
-    return parseInt(getComputedStyle(document.body).getPropertyValue('font-size'));
-  }
-
-  var pxToRem = function(px) {
-    return px / getFontSize() + 'rem';
-  }
 
   var sendMessage = function(message) {
     var loadingDuration = (message.replace(/<(?:.|\n)*?>/gm, '').length * typingSpeed) + 800;
@@ -52,44 +44,61 @@ window.onload = function() {
 
     bubbleEl.appendChild(loadingEl);
     bubbleEl.appendChild(messageEl);
+
+    // Hide message, set bubble to loading size
+    messageEl.style.opacity = '0';
+    messageEl.style.position = 'absolute';
+    messageEl.style.visibility = 'hidden';
+    bubbleEl.style.width = '4rem';
+    bubbleEl.style.height = '2.25rem';
+    bubbleEl.style.opacity = '0';
+    bubbleEl.style.overflow = 'hidden';
+
     messagesEl.appendChild(bubbleEl);
     messagesEl.appendChild(document.createElement('br'));
 
-    // Show bubble with loading dots
-    bubbleEl.style.opacity = 0;
-    bubbleEl.style.width = '4rem';
-    bubbleEl.style.height = '2.25rem';
-    messageEl.style.opacity = 0;
-
+    // Fade in loading bubble
     anime({
       targets: bubbleEl,
       opacity: [0, 1],
       duration: 300
     });
 
-    // After loading duration, reveal the message
     setTimeout(function() {
-      // Hide loading dots
+      // Hide dots, show message in normal flow to measure
       loadingEl.style.display = 'none';
+      messageEl.style.position = '';
+      messageEl.style.visibility = '';
       bubbleEl.classList.remove('cornered');
 
-      // Measure real message size
-      var msgW = pxToRem(messageEl.scrollWidth + 8);
-      var msgH = pxToRem(messageEl.scrollHeight + 16);
+      // Let browser measure the natural size
+      bubbleEl.style.width = 'auto';
+      bubbleEl.style.height = 'auto';
+      bubbleEl.style.maxWidth = '80%';
 
-      // Expand bubble to fit message
+      var finalW = bubbleEl.offsetWidth + 'px';
+      var finalH = bubbleEl.offsetHeight + 'px';
+
+      // Reset to loading size for animation
+      bubbleEl.style.width = '4rem';
+      bubbleEl.style.height = '2.25rem';
+      bubbleEl.style.overflow = 'hidden';
+
+      // Animate to full size
       anime({
         targets: bubbleEl,
-        width: msgW,
-        height: msgH,
-        duration: 300,
+        width: finalW,
+        height: finalH,
+        duration: 350,
         easing: 'easeOutQuad',
         complete: function() {
-          // Fade in message text
+          bubbleEl.style.width = 'auto';
+          bubbleEl.style.height = 'auto';
+          bubbleEl.style.overflow = '';
           anime({
             targets: messageEl,
             opacity: [0, 1],
-            duration: 300
+            duration: 250
           });
         }
       });
