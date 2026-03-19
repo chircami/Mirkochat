@@ -7,8 +7,8 @@ window.onload = function() {
 
   var getCurrentTime = function() {
     var date = new Date();
-    var hours =  date.getHours();
-    var minutes =  date.getMinutes();
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
     var current = hours + (minutes * .01);
     if (current >= 5 && current < 17) return 'Te deseo un feliz dia!!';
     if (current >= 17 && current < 20) return 'Te deseo una feliz tarde!!';
@@ -18,12 +18,12 @@ window.onload = function() {
   var messages = [
     'Hola 👋',
     'Me llamo Mirkolino',
-    'Soy desarrollador de paginas web con WordPress y otras tecnologías',
+    'Soy desarrollador de paginas web con WordPress y otras tecnologias',
     'Podemos charlar o tomar un ☕',
     'Si te es mas facil me puedes contactar a <a href="mailto:mirko.zedde@gmail.com">hola@mirkolab.com</a><br>visitar mi pagina <a target="_blank" href="https://www.mirkolab.com/">Mirkolab</a><br>o buscarme en las redes sociales<br>',
     '<a target="_blank" href="https://www.linkedin.com/in/mirkozedde">LinkedIn</a>',
     getCurrentTime(),
-    ' Nos 👀 pronto, Mirko.'
+    'Nos 👀 pronto, Mirko.'
   ]
 
   var getFontSize = function() {
@@ -114,7 +114,7 @@ window.onload = function() {
       scale: [.5, 1],
       duration: 400,
       delay: 25,
-      easing: 'easeOutElastic',
+      easing: 'easeOutElastic'
     });
     var dotsPulse = anime({
       targets: elements.bubble.querySelectorAll('b'),
@@ -123,7 +123,7 @@ window.onload = function() {
       duration: 300,
       loop: true,
       direction: 'alternate',
-      delay: function(i) {return (i * 100) + 50}
+      delay: function(i) { return (i * 100) + 50; }
     });
     setTimeout(function() {
       loadingLoop.pause();
@@ -138,21 +138,21 @@ window.onload = function() {
             anime({
               targets: elements.message,
               opacity: [0, 1],
-              duration: 300,
+              duration: 300
             });
           }
         }
       });
       bubbleSize.restart({
         scale: 1,
-        width: [dimensions.loading.w, dimensions.bubble.w ],
-        height: [dimensions.loading.h, dimensions.bubble.h ],
+        width: [dimensions.loading.w, dimensions.bubble.w],
+        height: [dimensions.loading.h, dimensions.bubble.h],
         marginTop: 0,
         marginLeft: 0,
         begin: function() {
           if (messageIndex < messages.length) elements.bubble.classList.remove('cornered');
         }
-      })
+      });
     }, loadingDuration - 50);
   }
 
