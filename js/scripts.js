@@ -2,7 +2,6 @@ window.onload = function() {
 
   var messagesEl = document.querySelector('.messages');
   var typingSpeed = 20;
-  var loadingText = '<b>•</b><b>•</b><b>•</b>';
   var messageIndex = 0;
 
   var getCurrentTime = function() {
@@ -26,122 +25,73 @@ window.onload = function() {
     'Nos vemos pronto, Mirko.'
   ]
 
-  var getFontSize = function() {
-    return parseInt(getComputedStyle(document.body).getPropertyValue('font-size'));
-  }
-
-  var pxToRem = function(px) {
-    return px / getFontSize() + 'rem';
-  }
-
-  var sendMessage = function(message) {
+  var sendMessage = function(message, callback) {
     var loadingDuration = (message.replace(/<(?:.|\n)*?>/gm, '').length * typingSpeed) + 800;
 
-    var bubbleEl = document.createElement('div');
-    var messageEl = document.createElement('span');
-    var loadingEl = document.createElement('span');
+    // Create elements
+    var bubbleEl  = document.createElement('div');
+    var dotsEl    = document.createElement('div');
+    var messageEl = document.createElement('div');
 
-    bubbleEl.classList.add('bubble');
-    bubbleEl.classList.add('cornered');
-    bubbleEl.classList.add('left');
-    messageEl.classList.add('message');
-    loadingEl.classList.add('loading');
+    bubbleEl.className  = 'bubble left cornered';
+    dotsEl.className    = 'loading';
+    messageEl.className = 'message';
 
+    dotsEl.innerHTML    = '<b>•</b><b>•</b><b>•</b>';
     messageEl.innerHTML = message;
-    loadingEl.innerHTML = loadingText;
+    messageEl.style.display = 'none';
 
-    bubbleEl.appendChild(loadingEl);
+    bubbleEl.appendChild(dotsEl);
     bubbleEl.appendChild(messageEl);
-
-    messageEl.style.opacity = '0';
-    messageEl.style.position = 'absolute';
-    messageEl.style.visibility = 'hidden';
-    bubbleEl.style.overflow = 'hidden';
-
     messagesEl.appendChild(bubbleEl);
     messagesEl.appendChild(document.createElement('br'));
 
-    // Entrada con efecto elástico
+    // Phase 1: show bubble with dots, animate dots
     anime({
       targets: bubbleEl,
       opacity: [0, 1],
-      width: ['0rem', '4rem'],
-      height: ['0rem', '2.25rem'],
-      marginTop: ['1.5rem', 0],
-      duration: 600,
-      easing: 'easeOutElastic'
+      translateY: [10, 0],
+      duration: 400,
+      easing: 'easeOutQuad'
     });
 
-    // Puntos pulsantes
-    var dotsPulse = anime({
-      targets: bubbleEl.querySelectorAll('b'),
-      scale: [1, 1.3],
-      opacity: [0.4, 1],
+    anime({
+      targets: dotsEl.querySelectorAll('b'),
+      scale: [0.5, 1.2],
+      opacity: [0.3, 1],
       duration: 400,
       loop: true,
       direction: 'alternate',
-      delay: anime.stagger(100)
-    });
-
-    // Pulso del globo
-    var loadingLoop = anime({
-      targets: bubbleEl,
-      scale: [1, 1.04],
-      duration: 900,
-      loop: true,
-      direction: 'alternate',
+      delay: function(el, i) { return i * 120; },
       easing: 'easeInOutSine'
     });
 
+    // Phase 2: after loading duration, swap dots for message
     setTimeout(function() {
-      loadingLoop.pause();
-      dotsPulse.pause();
-
-      loadingEl.style.display = 'none';
-      messageEl.style.position = '';
-      messageEl.style.visibility = '';
+      dotsEl.style.display = 'none';
+      messageEl.style.display = '';
       bubbleEl.classList.remove('cornered');
-      bubbleEl.style.scale = '1';
 
-      // Medir tamaño real
-      bubbleEl.style.width = 'auto';
-      bubbleEl.style.height = 'auto';
-      bubbleEl.style.maxWidth = '80%';
-      var finalW = bubbleEl.offsetWidth + 'px';
-      var finalH = bubbleEl.offsetHeight + 'px';
-      bubbleEl.style.width = '4rem';
-      bubbleEl.style.height = '2.25rem';
-
-      // Expandir al tamaño real
       anime({
-        targets: bubbleEl,
-        width: finalW,
-        height: finalH,
-        duration: 400,
-        easing: 'easeOutQuad',
-        complete: function() {
-          bubbleEl.style.width = 'auto';
-          bubbleEl.style.height = 'auto';
-          bubbleEl.style.overflow = '';
-          // Aparecer texto
-          anime({
-            targets: messageEl,
-            opacity: [0, 1],
-            duration: 300
-          });
-        }
+        targets: messageEl,
+        opacity: [0, 1],
+        translateY: [4, 0],
+        duration: 350,
+        easing: 'easeOutQuad'
       });
 
+      if (callback) callback();
     }, loadingDuration);
   }
 
   var sendMessages = function() {
     var message = messages[messageIndex];
     if (!message) return;
-    sendMessage(message);
     ++messageIndex;
-    var delay = (message.replace(/<(?:.|\n)*?>/gm, '').length * typingSpeed) + 1200;
-    setTimeout(sendMessages, delay);
+    var nextDelay = (message.replace(/<(?:.|\n)*?>/gm, '').length * typingSpeed) + 1000;
+    sendMessage(message, function() {
+      setTimeout(sendMessages, nextDelay * 0.3);
+    });
   }
 
   sendMessages();
